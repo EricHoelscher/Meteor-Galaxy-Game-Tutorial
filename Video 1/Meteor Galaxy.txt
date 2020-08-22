@@ -16,10 +16,10 @@ function move()
     var moveX = 0;
     var moveY = 0;
     
-    if(isKeyPressed(Keyboard.LEFT))  moveX -= MOVE_SPEED;
-    if(isKeyPressed(Keyboard.RIGHT))  moveX += MOVE_SPEED;
-    if(isKeyPressed(Keyboard.UP))  moveY -= MOVE_SPEED;
-    if(isKeyPressed(Keyboard.DOWN))  moveY += MOVE_SPEED;
+    if(isKeyPressed(Keyboard.LEFT)) moveX -= MOVE_SPEED;
+    if(isKeyPressed(Keyboard.RIGHT)) moveX += MOVE_SPEED;
+    if(isKeyPressed(Keyboard.UP)) moveY -= MOVE_SPEED;
+    if(isKeyPressed(Keyboard.DOWN)) moveY += MOVE_SPEED;
     
     circle.move(moveX, moveY);
 }
