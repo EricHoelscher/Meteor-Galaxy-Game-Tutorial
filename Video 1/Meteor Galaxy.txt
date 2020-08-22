@@ -1,0 +1,25 @@
+var circle = new Circle(25);
+
+function start() 
+{
+    circle.setPosition(getWidth() / 2, getHeight() / 2);
+    circle.setColor(Color.GREEN);
+    add(circle);
+    
+    setTimer(move, 20);
+}
+
+var MOVE_SPEED = 2;
+
+function move()
+{
+    var moveX = 0;
+    var moveY = 0;
+    
+    if(isKeyPressed(Keyboard.LEFT))  moveX -= MOVE_SPEED;
+    if(isKeyPressed(Keyboard.RIGHT))  moveX += MOVE_SPEED;
+    if(isKeyPressed(Keyboard.UP))  moveY -= MOVE_SPEED;
+    if(isKeyPressed(Keyboard.DOWN))  moveY += MOVE_SPEED;
+    
+    circle.move(moveX, moveY);
+}

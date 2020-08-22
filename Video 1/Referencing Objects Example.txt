@@ -1,0 +1,16 @@
+function start()
+{
+    var valueOne = 2;
+    var valueTwo = valueOne;
+    valueTwo++;
+    println("valueOne: " + valueOne + "  valueTwo: " + valueTwo); //only valueTwo is changed
+    
+    //objects
+    var circleOne = new Circle(30); //circleOne gets assigned a reference to a new circle
+    circleOne.setPosition(getWidth() / 2, getHeight() / 2);
+    circleOne.setColor(Color.BLACK);
+    add(circleOne);
+    
+    var circleTwo = circleOne; //circleTwo gets the reference to the same circle as circleOne
+    circleTwo.setColor(Color.GREEN);
+}
