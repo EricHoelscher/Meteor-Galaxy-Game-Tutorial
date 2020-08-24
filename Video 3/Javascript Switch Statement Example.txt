@@ -1,0 +1,87 @@
+//In Javascript, you can use an object to hold constants. This is similar to
+//how you could write an enumeration in Java. This state object holds the
+//states of a VHS player
+var State = {
+    PLAY: 0,
+    PLAY_2: 1,
+    PAUSE: 2,
+    REWIND: 3,
+    FAST_FORWARD: 4,
+    EJECT: 5,
+    NONE: 6
+};
+
+var vhsPlayerState = State.PLAY;
+// var vhsPlayerState = State.PAY_2;
+// var vhsPlayerState = State.PAUSE;
+// var vhsPlayerState = State.NONE;
+
+function start()
+{
+    printStateIfElse();
+    printStateSwitch();
+}
+
+//the two following methods accomplish the same task using different methods
+
+//print out the state of the VHS player using a switch statement
+function printStateSwitch()
+{
+    switch(vhsPlayerState)
+    {
+        //the default case will run if vhsPlayerState does not match any of the other cases
+        default:
+            println("none");
+            break;
+            
+        case State.PLAY_2:
+        case State.PLAY:
+            println("Play");
+            break;
+            
+        case State.PAUSE:
+            println("Pause")
+            break;
+            
+        case State.REWIND:
+            println("Rewind");
+            break;
+            
+        case State.FAST_FORWARD:
+            println("Fast Forward");
+            break;
+            
+        case State.EJECT:
+            println("Eject");
+            break;
+    }
+}
+
+//Print out the state of the VHS player using if/else statements
+function printStateIfElse()
+{
+    if(vhsPlayerState == State.PLAY || vhsPlayerState == State.PLAY_2)
+    {
+        println("Play");
+    }
+    else if(vhsPlayerState == State.PAUSE)
+    {
+        println("Pause");
+    }
+    else if(vhsPlayerState == State.REWIND)
+    {
+        println("Rewind");
+    }
+    else if(vhsPlayerState == State.FAST_FORWARD)
+    {
+        println("Fast Forward");
+    }
+    else if(vhsPlayerState == State.EJECT)
+    {
+        println("Eject");
+    }
+    else
+    {
+        println("None");
+    }
+}

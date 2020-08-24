@@ -1,0 +1,29 @@
+//This is a simple example written in Java to show what enumerations
+//look like since they are not natively supported in Javascript.
+//This code will not work in Javascript
+
+public class MyProgram
+{
+    //This enum holds the states that a VHS player could have
+    enum State {
+        PLAY,
+        PAUSE,
+        REWIND,
+        FAST_FORWARD,
+        EJECT
+    };
+    
+    public static void main(String[] args)
+    {
+        State vhsPlayerState = State.EJECT;
+        
+        if(vhsPlayerState == State.PAUSE)
+        {
+            System.out.println("VHS is paused");
+        }
+        else if(vhsPlayerState == State.EJECT)
+        {
+            System.out.println("Ejecting VHS");
+        }
+    }
+}
