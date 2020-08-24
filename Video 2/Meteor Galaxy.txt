@@ -1,0 +1,81 @@
+setSize(650, 450); //temporary canvas size to leave more space for the text editor
+//setSize(720, 480); //this canvas size can be used if you share the project
+
+var objectMap = {
+    title: new WebImage("https://codehs.com/uploads/1f72892d017ceaf10c44c42fc954d858"),
+    ship: new WebImage("https://codehs.com/uploads/d366c18ef79f87caffbd4459acfcfb7e")
+};
+
+//learn about Object.keys() here: https://stackoverflow.com/questions/5223/length-of-a-javascript-object
+                                //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+var NUM_IMAGES = Object.keys(objectMap).length; //number of images in objectMap.
+
+var numLoadedImages = 0;
+var loaded = false; //true when all of the web images in the game are loaded
+
+var MOVE_SPEED = 2;
+
+function start() 
+{
+    setBackgroundColor(Color.BLACK);
+    loadImages();
+}
+
+//loads all of the web images in objectMap
+function loadImages()
+{
+    println("Loading Images . . .");
+    for(var key in objectMap)
+    {
+        //for every WebImage in objectMap, set the loaded callbackMethod to loadedCallback
+        objectMap[key].loaded(loadedCallback);
+    }
+}
+
+//called when a WebImage is loaded. If all the images are loaded, it will start the game
+function loadedCallback()
+{
+    numLoadedImages++;
+    println(numLoadedImages + " image(s) loaded");
+    
+    if(numLoadedImages >= NUM_IMAGES && !loaded)
+    {
+        println("Load Success!");
+        loaded = true;
+        //setTimer(gameManager, 20);
+        testDraw();
+    }
+}
+
+//quick test function to try out the setPositionCentered function. Will be deleted later in the series
+function testDraw()
+{
+    setPositionCentered(objectMap.ship, getWidth() / 2, getHeight() / 2);
+    add(objectMap.ship);
+    
+    setPositionCentered(objectMap.title, getWidth() / 2, getHeight() / 2 - 150);
+    add(objectMap.title);
+}
+
+function gameManager()
+{
+    
+}
+
+function moveShip()
+{
+    var moveX = 0;
+    var moveY = 0;
+    
+    if(isKeyPressed(Keyboard.LEFT)) moveX -= MOVE_SPEED;
+    if(isKeyPressed(Keyboard.RIGHT)) moveX += MOVE_SPEED;
+    if(isKeyPressed(Keyboard.UP)) moveY -= MOVE_SPEED;
+    if(isKeyPressed(Keyboard.DOWN)) moveY += MOVE_SPEED;
+    
+}
+
+//Sets the position of shape or WebImage with its center at the given coordinates
+function setPositionCentered(shape, x, y)
+{
+    shape.setPosition(x - shape.getWidth() / 2, y - shape.getHeight() / 2);
+}
