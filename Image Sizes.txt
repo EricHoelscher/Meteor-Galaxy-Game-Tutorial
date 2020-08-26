@@ -1,0 +1,18 @@
+Here are the sizes of the images I used in Meteor Galaxy so that you can make your own a similar size
+
+
+Title Logo:
+
+Ship: 
+
+Game Over: 
+
+Meteor: 
+
+Explosions: 
+
+Laser Beam: 
+
+Play Button: 
+
+Play Again Button: 
