@@ -1,18 +1,18 @@
-Here are the sizes of the images I used in Meteor Galaxy so that you can make your own a similar size
+Here are the dimensions of the images I used in Meteor Galaxy so that you can make your own a similar size. Dimensions are in pixels.
 
 
-Title Logo:
+Title Logo: 600 X 100
 
-Ship: 
+Ship: 100 X 70
 
-Game Over: 
+Game Over: 600 X 70
 
-Meteor: 
+Meteor: 70 X 80
 
-Explosions: 
+Explosions: 100 X 100
 
-Laser Beam: 
+Laser Beam: 30 X 10
 
-Play Button: 
+Play Button: 200 X 150
 
-Play Again Button: 
+Play Again Button: 200 X 150
