@@ -1,0 +1,477 @@
+setSize(650, 450); //temporary canvas size to leave more space for the text editor
+//setSize(720, 480); //this canvas size can be used if you share the project
+
+//game states
+var State = {
+    INIT_INTRO: 0,
+    PLAY_INTRO: 1,
+    MENU: 2,
+    INIT_GAME: 3,
+    RUN_GAME: 4
+};
+
+var gameState = State.INIT_INTRO;
+
+var objectMap = {
+    title: new WebImage("https://codehs.com/uploads/1f72892d017ceaf10c44c42fc954d858"),
+    ship: new WebImage("https://codehs.com/uploads/d366c18ef79f87caffbd4459acfcfb7e"),
+    playButton: new WebImage("https://codehs.com/uploads/b474369bbc60eb68148567b839ad641b"),
+    meteor: new WebImage("https://codehs.com/uploads/09b05d2f2fcb1c409b44370c29e5bb02")
+};
+
+//learn about Object.keys() here: https://stackoverflow.com/questions/5223/length-of-a-javascript-object
+                                //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+var NUM_IMAGES = Object.keys(objectMap).length; //number of images in objectMap.
+var numLoadedImages = 0;
+var loaded = false; //true when all of the web images in the game are loaded
+
+//click variables
+var clickableObjects = [];
+var clickCallbackFunctions = [];
+
+//star variables
+var NUM_STARS = 4000; //set this lower if there are performance issues
+var stars = [];
+var starDepth = [];
+
+//world constants
+var WORLD_WIDTH = 10000;
+var WORLD_HEIGHT = 7000;
+var WORLD_TOP_LEFT_X = -WORLD_WIDTH / 2; 
+var WORLD_TOP_LEFT_Y = -WORLD_HEIGHT / 2;
+var WORLD_BOTTOM_RIGHT_X = WORLD_WIDTH / 2;
+var WORLD_BOTTOM_RIGHT_Y = WORLD_HEIGHT / 2;
+
+//ship constants
+var SHIP_SPEED = 0.7;
+var SHIP_ROTATE_SPEED = 0.005;
+
+//ship variables
+var shipRotation = 0;
+var shipRotationV = 0;
+
+var scrollX = -getWidth() / 2;
+var lastScrollX = scrollX;
+var scrollXV = 0;
+var scrollY = -getHeight() / 2;
+var lastScrollY = scrollY;
+var scrollYV = 0;
+
+var forceFieldRectangles = [];
+
+//meteor variables
+var MAX_NUM_METEORS = 200;
+var METEOR_SPEED = 5;
+var meteors = [];
+
+function start() 
+{
+    mouseClickMethod(clickHandler); //clickHandler will be called when the mouse is clicked
+    setBackgroundColor(Color.BLACK);
+    loadImages();
+}
+
+//loads all of the web images in objectMap
+function loadImages()
+{
+    println("Loading Images . . .");
+    for(var key in objectMap)
+    {
+        //for every WebImage in objectMap, set the loaded callbackMethod to loadedCallback
+        objectMap[key].loaded(loadedCallback);
+    }
+}
+
+//called when a WebImage is loaded. If all the images are loaded, it will start the game
+function loadedCallback()
+{
+    numLoadedImages++;
+    println(numLoadedImages + " image(s) loaded");
+    
+    if(numLoadedImages >= NUM_IMAGES && !loaded)
+    {
+        println("Load Success!");
+        loaded = true;
+        setTimer(gameManager, 20);
+    }
+}
+
+//main function to organize which part of the game is run based on gameState
+function gameManager()
+{
+    switch(gameState)
+    {
+        case State.INIT_INTRO:
+            initIntro();
+            break;
+            
+        case State.PLAY_INTRO:
+            playIntro();
+            break;
+            
+        case State.MENU:
+            //right now, just wait for the play button to be pressed
+            //You could call functions here to add animations to the title screen
+            break;
+            
+        case State.INIT_GAME:
+            initGame();
+            break;
+            
+        case State.RUN_GAME:
+            runGame();
+            break;
+    }
+}
+
+//initialize all of the objects used in the intro and add them onto the sceen
+function initIntro()
+{
+    removeAll();
+    
+    setPositionCentered(objectMap.title, getWidth() / 2, -100);
+    setPositionCentered(objectMap.playButton, getWidth() / 2, getHeight() + 100);
+    
+    add(objectMap.title);
+    add(objectMap.playButton);
+    
+    addClickableObject(objectMap.playButton, function() { gameState = State.INIT_GAME; clearClickableObjects(); });
+    
+    gameState = State.PLAY_INTRO;
+}
+
+//move the game title and play button onto the screen
+function playIntro()
+{
+    var finished = true;
+    
+    finished = moveTowards(objectMap.title, getWidth() / 2, 100) && finished;
+    finished = finished && moveTowards(objectMap.playButton, getWidth() / 2, getHeight() - 150) ;
+    
+    if(finished)
+    {
+        gameState = State.MENU;
+    }
+}
+
+//initialize the game
+function initGame()
+{
+    shipRotation = 0;
+    shipRotationV = 0;
+    
+    meteors = [];
+    
+    scrollX = -getWidth() / 2;
+    lastScrollX = scrollX;
+    scrollXV = 0;
+    scrollY = -getHeight() / 2;
+    lastScrollY = scrollY;
+    scrollYV = 0;
+    
+    removeAll(); //remove everything before drawing new objects for the game
+    
+    addStars();
+    
+    setPositionCentered(objectMap.ship, getWidth() / 2, getHeight() / 2);
+    add(objectMap.ship);
+    
+    addForceField(); //if you want the ship to be on top of the force field, put this before you add the ship instead
+    
+    gameState = State.RUN_GAME; //initialization has finished, so set the state to run the game
+}
+
+//randomly add the stars to the game world
+function addStars()
+{
+    //clear old stars
+    stars = [];
+    starDepth = [];
+    
+    //go through the stars array and add the new stars
+    for(var i = 0; i < NUM_STARS; i++)
+    {
+        var newStar = new Circle(Randomizer.nextFloat(1.5, 4));
+        //give the new star a random position within the game world
+        newStar.setPosition(
+            Randomizer.nextInt(WORLD_TOP_LEFT_X, WORLD_BOTTOM_RIGHT_X),
+            Randomizer.nextInt(WORLD_TOP_LEFT_Y, WORLD_BOTTOM_RIGHT_Y)
+        );
+        newStar.setColor(Color.YELLOW);
+        add(newStar);
+        
+        //add the new star and a random depth to the arrays
+        stars.push(newStar);
+        starDepth.push(Randomizer.nextFloat(1, 0.01));
+    }
+}
+
+//add the force fields to the screen
+function addForceField()
+{
+    forceFieldRectangles = []; //clear the old rectangles
+    
+    for(var i = 0; i < 100; i++)
+    {
+        //the rectangles have a 16 pixel gap between them on the sides
+        var newRectangle = new Rectangle(WORLD_WIDTH + 32 * i, WORLD_HEIGHT + 32 * i);
+        newRectangle.setPosition(WORLD_TOP_LEFT_X - 16 * i, WORLD_TOP_LEFT_Y - 16 * i);
+        newRectangle.setBorder(true); //make the rectangle have a border
+        newRectangle.setBorderWidth(8);
+        newRectangle.setBorderColor(Color.GREEN);
+        newRectangle.setColor("#FF000000"); //make the rectangle transparent (excluding the border)
+        
+        add(newRectangle);
+        forceFieldRectangles.push(newRectangle);
+    }
+}
+
+//run the functions that make the game work
+function runGame()
+{
+    moveShip();
+    moveForceField();
+    checkForceField();
+    moveStars();
+    moveMeteors();
+}
+
+//move the ship by scrolling around the game world
+function moveShip()
+{
+    //update the last scroll x and y
+    lastScrollX = scrollX;
+    lastScrollY = scrollY;
+    
+    var move = 0;
+    var rotate = 0;
+    
+    //get keyboard input
+    if(isKeyPressed(Keyboard.LEFT)) rotate -= SHIP_ROTATE_SPEED;
+    if(isKeyPressed(Keyboard.RIGHT)) rotate += SHIP_ROTATE_SPEED;
+    if(isKeyPressed(Keyboard.UP)) move -= SHIP_SPEED;
+    if(isKeyPressed(Keyboard.DOWN)) move += SHIP_SPEED;
+    
+    //rotate the ship
+    shipRotationV += rotate;
+    shipRotation += shipRotationV;
+    objectMap.ship.setRotation(shipRotation, 1);
+    
+    //move the ship
+    scrollXV += getMoveX(shipRotation, move);
+    scrollYV += getMoveY(shipRotation, move);
+    
+    scrollX += scrollXV;
+    scrollY += scrollYV;
+    
+    //friction
+    scrollXV /= 1.01;
+    scrollYV /= 1.01;
+    shipRotationV /= 1.05;
+}
+
+//check if the space ship is out of bounds
+function checkForceField()
+{
+    var outOfBounds = false;
+    
+    //force the space ship back into the world if it is out of bounds
+    if(scrollX < WORLD_TOP_LEFT_X)
+    {
+        scrollXV += SHIP_SPEED * 2.5;
+        outOfBounds = true;
+    }
+    else if(scrollX > WORLD_BOTTOM_RIGHT_X)
+    {
+        scrollXV -= SHIP_SPEED * 2.5;
+        outOfBounds = true;
+    }
+    
+    if(scrollY < WORLD_TOP_LEFT_Y)
+    {
+        scrollYV += SHIP_SPEED * 2.5;
+        outOfBounds = true;
+    }
+    else if(scrollY > WORLD_BOTTOM_RIGHT_Y)
+    {
+        scrollYV -= SHIP_SPEED * 2.5;
+        outOfBounds = true;
+    }
+    
+    if(outOfBounds)
+    {
+        //spin out of control if the ship is out of bounds
+        shipRotationV += SHIP_ROTATE_SPEED * 2.5;
+    }
+}
+
+//move the stars based on the scroll x and y
+function moveStars()
+{
+    for(var i = 0; i < stars.length; i++)
+    {
+        var depth = starDepth[i];
+        var moveX = (scrollX - lastScrollX) * depth;
+        var moveY = (scrollY - lastScrollY) * depth;
+        
+        stars[i].move(moveX, moveY);
+    }
+}
+
+//move meteors to the screen and replenish them
+function moveMeteors()
+{
+    //replenish meteors if there are too few
+    while(meteors.length < MAX_NUM_METEORS)
+    {
+        var newMeteor = new WebImage(getImageURL(objectMap.meteor));
+        
+        newMeteor.setRotation(Randomizer.nextFloat(0, 360));
+        
+        //find a random position within the world
+        var xPosition = Randomizer.nextInt(WORLD_TOP_LEFT_X, WORLD_BOTTOM_RIGHT_X);
+        var yPosition = Randomizer.nextInt(WORLD_TOP_LEFT_Y, WORLD_BOTTOM_RIGHT_Y);
+        
+        //while that position is too close to the ship, find a new position
+        while(getDistance(getWidth() / 2, getHeight() / 2, xPosition, yPosition) < getWidth())
+        {
+            xPosition = Randomizer.nextInt(WORLD_TOP_LEFT_X, WORLD_BOTTOM_RIGHT_X);
+            yPosition = Randomizer.nextInt(WORLD_TOP_LEFT_Y, WORLD_BOTTOM_RIGHT_Y);
+        }
+        
+        newMeteor.setPosition(xPosition, yPosition);
+        
+        //add the new meteor to the canvas and meteor array
+        add(newMeteor);
+        meteors.push(newMeteor);
+    }
+    
+    //go through all the meteors in the array
+    for(var i = 0; i < meteors.length; i++)
+    {
+        var currentMeteor = meteors[i];
+        
+        if(getDistance(0, 0, currentMeteor.getX(), currentMeteor.getY()) > WORLD_WIDTH)
+        {
+            //remove the meteor if it has left the world boundary
+            meteors.remove(i);
+            remove(currentMeteor);
+        }
+        else
+        {
+            //move the meteor in the direction they arefaceing
+            var moveX = scrollX - lastScrollX;
+            var moveY = scrollY - lastScrollY;
+            
+            moveX += getMoveX(getRotation(currentMeteor), METEOR_SPEED);
+            moveY += getMoveY(getRotation(currentMeteor), METEOR_SPEED);
+            
+            currentMeteor.move(moveX, moveY);
+        }
+    }
+}
+
+//move the force field based on the scroll x and y
+function moveForceField()
+{
+    for(var i = 0; i < forceFieldRectangles.length; i++)
+    {
+        forceFieldRectangles[i].move(scrollX - lastScrollX, scrollY - lastScrollY);
+    }
+}
+
+//make no objects clickable
+function clearClickableObjects()
+{
+    clickableObjects = [];
+    clickCallbackFunctions = [];
+}
+
+//make the given object clickable (can be a shape or WebImage).
+//the callback function will be called when that object is clicked
+function addClickableObject(shape, callbackFunction)
+{
+    clickableObjects.push(shape);
+    clickCallbackFunctions.push(callbackFunction);
+}
+
+//Function called on mouse clicks to make objects clickable
+function clickHandler(e)
+{
+    for(var i = 0; i < clickableObjects.length; i++)
+    {
+        //this goes through the array of clickable objects and checks if the click
+        //is within the bounds of each
+        if(clickableObjects[i].containsPoint(e.getX(), e.getY()))
+        {
+            //if the click is within the bounds of the clickable object, run the
+            //callback function associated with that object
+            clickCallbackFunctions[i]();
+            break;
+        }
+    }
+}
+
+//calculate the distance needed to move on the x axis with the given angle and distance
+function getMoveX(angle, distance)
+{
+    return distance * Math.cos(angle);
+}
+
+//calculate the distance needed to move on the y axis with the given angle and distance
+function getMoveY(angle, distance)
+{
+    return distance * Math.sin(angle);
+}
+
+//Sets the position of shape or WebImage with its center at the given coordinates
+function setPositionCentered(shape, x, y)
+{
+    shape.setPosition(x - shape.getWidth() / 2, y - shape.getHeight() / 2);
+}
+
+//smoothly move an object towards the target position. If centered is true, the
+//middle of the shape will be at the target position. Note: with circles, centered
+//can be false since they are already centered
+function moveTowards(shape, targetX, targetY, centered = true)
+{
+    if(centered)
+    {
+        targetX -= shape.getWidth() / 2;
+        targetY -= shape.getHeight() / 2;
+    }
+    
+    var distX = targetX - shape.getX();
+    var distY = targetY - shape.getY();
+    
+    shape.move(distX / 10, distY / 10);
+    
+    if(getDistance(shape.getX(), shape.getY(), targetX, targetY) < 1)
+    {
+        shape.setPosition(targetX, targetY);
+        return true;
+    }
+    
+    return false;
+}
+
+//return the distance between the two given points
+function getDistance(x1, y1, x2, y2)
+{
+    var distX = x1 - x2;
+    var distY = y1 - y2;
+    
+    return Math.sqrt(distX * distX + distY * distY);
+}
+
+//get the url from a WebImage
+function getImageURL(webImage)
+{
+    return webImage.image.src;
+}
+
+//get the rotation of a shape or WebImage
+function getRotation(shape)
+{
+    return shape.rotation;
+}
