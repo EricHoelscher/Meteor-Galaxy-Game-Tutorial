@@ -15,7 +15,7 @@ Part 4, Randomly Generated Stars: https://youtu.be/h7etyF7G6_U
 
 Part 5, Movement with Velocity: https://youtu.be/CaZoK-Wm8os
 
-Part 6, Force Field: Coming soon!
+Part 6, Force Field: https://youtu.be/KVLvaJ3q0IU
 
 Part 7, Adding Meteors: Coming soon!
 
