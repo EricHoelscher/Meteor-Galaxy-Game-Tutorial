@@ -21,4 +21,6 @@ Part 7, Adding Meteors: https://youtu.be/jzm_3FLBMno
 
 Part 8, Laser Beams: https://youtu.be/KVLvaJ3q0IU
 
-More videos to come! :)
+Part 9, Collisions: Coming Soon!
+
+Part 10, Finishing the Game: Coming Soon!
