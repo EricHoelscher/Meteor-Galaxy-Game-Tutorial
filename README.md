@@ -15,10 +15,12 @@ Part 4, Randomly Generated Stars: https://youtu.be/h7etyF7G6_U
 
 Part 5, Movement with Velocity: https://youtu.be/CaZoK-Wm8os
 
-Part 6, Force Field: Coming soon!
+Part 6, Force Field: https://youtu.be/KVLvaJ3q0IU
 
-Part 7, Adding Meteors: Coming soon!
+Part 7, Adding Meteors: https://youtu.be/jzm_3FLBMno
 
-Part 8, Laser Beams: Coming Soon!
+Part 8, Laser Beams: https://youtu.be/KVLvaJ3q0IU
 
-More videos to come! :)
+Part 9, Collisions: Coming Soon!
+
+Part 10, Finishing the Game: Coming Soon!
