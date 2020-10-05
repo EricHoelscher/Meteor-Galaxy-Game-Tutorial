@@ -23,4 +23,4 @@ Part 8, Laser Beams: https://youtu.be/KVLvaJ3q0IU
 
 Part 9, Collisions: https://youtu.be/n8ZBhqXr9JI
 
-Part 10, Finishing the Game: Coming Soon!
+Part 10, Finishing the Game: https://youtu.be/Uo-Vs5Px84s
