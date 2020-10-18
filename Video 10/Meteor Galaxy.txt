@@ -131,7 +131,7 @@ function loadedCallback()
 function printInstructions()
 {
     println("");
-    println("Object: Defend galaxy from meteors");
+    println("Objective: Defend galaxy from meteors");
     println("Controls:");
     println("Arrow Keys: Move");
     println("Spacebar: Fire Laser Beam");
